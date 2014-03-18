@@ -1,4 +1,4 @@
-Log notice stdout
-ExitPolicy reject *:*
-ORPort 9001
-
+Log notice  stderr
+ExitPolicy  reject *:*
+ORPort      9001
+DirPort     9030

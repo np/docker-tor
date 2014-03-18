@@ -1,0 +1,4 @@
+#!/bin/bash
+set -eu
+TOR_CONTACT_INFO='2048R/57EF6CA0 Nicolas Pouillard https://nicolaspouillard.fr' \
+  docker build --rm=false -t d.ail/tor .

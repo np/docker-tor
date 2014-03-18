@@ -1,21 +1,20 @@
-FROM ubuntu
-MAINTAINER Patrick O'Doherty <p@trickod.com>
+FROM d.ail/arch
 
-EXPOSE 9091
-ENV VERSION 0.2.4.20
+RUN pacman --noconfirm -Syu tor &&\
+    pacman -D --asdeps `pacman -Qqet` &&\
+    pacman -D --asexplicit tor pacman &&\
+    pacman --noconfirm -Ru `pacman -Qqd` &&\
+    pacman --noconfirm -Scc
 
-RUN apt-get install -y curl build-essential libevent-dev libssl-dev
-RUN curl https://www.torproject.org/dist/tor-${VERSION}.tar.gz | tar xz -C /tmp
-
-RUN cd /tmp/tor-${VERSION} && ./configure
-RUN cd /tmp/tor-${VERSION} && make
-RUN cd /tmp/tor-${VERSION} && make install
-
-ADD ./torrc /etc/torrc
-# Allow you to upgrade your relay without having to regenerate keys
-VOLUME /.tor
+ADD torrc /etc/torrc
 
 # Generate a random nickname for the relay
-RUN echo "Nickname docker$(head -c 16 /dev/urandom  | sha1sum | cut -c1-10)" >> /etc/torrc
+RUN echo "Nickname xndocker$(head -c 16 /dev/random  | sha1sum | cut -c1-10)" >>/etc/torrc  &&\
+    echo "ContactInfo $CONTACT_INFO" >>/etc/torrc &&\
+    chown tor:tor /var/lib/tor
 
-CMD /usr/local/bin/tor -f /etc/torrc
+CMD /usr/bin/tor
+
+USER tor
+
+EXPOSE 9001 9050
